@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: projectservice
+  datasource:
+    url: jdbc:postgresql://localhost:5432/budgetalert_project_db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
