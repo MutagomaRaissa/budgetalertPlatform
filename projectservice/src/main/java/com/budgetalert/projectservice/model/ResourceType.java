@@ -1,6 +1,6 @@
 package com.budgetalert.projectservice.model;
 
-public enum CoverageCategory {
+public enum ResourceType {
     COMPUTE,
     STORAGE,
     NETWORK

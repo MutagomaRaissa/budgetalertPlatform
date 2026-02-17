@@ -1,4 +1,7 @@
 package com.budgetalert.alertservice.repository;
 
-public interface AlertRepository {
+import com.budgetalert.alertservice.model.Alert;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AlertRepository extends JpaRepository<Alert, Long> {
 }

@@ -4,7 +4,7 @@ spring:
 
   cloud:
     consul:
-      host: ${CONSUL_HOST:localhost}
+      host: ${CONSUL_HOST:consul}
       port: ${CONSUL_PORT:8500}
       discovery:
         service-name: ${spring.application.name}
@@ -14,19 +14,24 @@ spring:
 
     gateway:
       routes:
-        # Catalog Service routes
-        - id: catalog-service
-          uri: lb://catalog-service
+        - id: project-service
+          uri: lb://project-service
           predicates:
-            - Path=/api/v1/products/**
+            - Path=/projects/**
           filters:
             - StripPrefix=0
 
-        # Inventory Service routes
-        - id: inventory-service
-          uri: lb://inventory-service
+        - id: coverage-service
+          uri: lb://coverage-service
           predicates:
-            - Path=/api/v1/inventory/**
+            - Path=/coverage/**
+          filters:
+            - StripPrefix=0
+
+        - id: alert-service
+          uri: lb://alert-service
+          predicates:
+            - Path=/alerts/**
           filters:
             - StripPrefix=0
 
@@ -40,8 +45,9 @@ server:
 
 logging:
   level:
-    com.corep.gateway: INFO
+    com.budgetalert.gateway: INFO
     org.springframework.cloud.gateway: INFO
+    feign: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %clr([%5level]) - %msg%n"
 
@@ -55,4 +61,3 @@ management:
       probes:
         enabled: true
       show-details: always
-

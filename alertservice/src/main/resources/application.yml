@@ -1,9 +1,9 @@
 spring:
   application:
-    name: project-service
+    name: alert-service
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://project-db:5432/projectdb}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://alert-db:5432/alertdb}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -31,12 +31,12 @@ spring:
         enabled: true
 
 server:
-  port: ${SERVER_PORT:8081}
+  port: ${SERVER_PORT:8083}
 
 logging:
   level:
-    com.budgetalert.project: INFO
-    com.budgetalert.project.client: DEBUG
+    com.budgetalert.alert: INFO
+    com.budgetalert.alert.client: DEBUG
     org.springframework.web: INFO
     org.hibernate.SQL: INFO
     feign: DEBUG

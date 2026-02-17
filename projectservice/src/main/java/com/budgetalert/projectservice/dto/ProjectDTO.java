@@ -1,5 +1,7 @@
 package com.budgetalert.projectservice.dto;
 
+import com.budgetalert.projectservice.model.ProjectStatus;
+import com.budgetalert.projectservice.model.ResourceType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,27 +10,18 @@ import lombok.Setter;
 public class ProjectDTO {
 
 
-    private Long id;
-
-    private long projectId;
-
     private String name;
-
-    private String application_owner;
-
+    private String applicationOwner;
+    private String email;
     private String description;
+    private String cloudProvider;
+    private ResourceType resourceType;   // COMPUTE, STORAGE, NETWORK
+    private Double resourceSizeGb;       // GB of RAM or storage
+    private Double monthlyBudget;        // e.g., 1200.0
 
-    private String subscription;
+    // Optional: let client override defaults
+    private Double budgetThresholdPercentage; // default 80.0
+    private ProjectStatus status;
+    }
 
-    private String resource_group;
 
-    private String ito_provider;
-
-    private String status;
-
-    private String cloud_provider;
-
-    private Double annual_budget;
-
-    private Double monthly_budget;
-}

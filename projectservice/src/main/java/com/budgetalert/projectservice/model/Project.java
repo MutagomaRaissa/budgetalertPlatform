@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
 @Table(name="projects")
 @Getter @Setter
@@ -15,40 +18,36 @@ import lombok.Setter;
 public class Project {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "project_id")
-    private long projectId;
-
-    @Column(name= "project_name")
     private String name;
 
-    @Column(name= "project_owner")
-    private String application_owner;
+    private String applicationOwner;
 
-    @Column(name = "description")
+    private String email;
+
     private String description;
 
-    @Column(name = "subscription")
-    private String subscription;
+    private String cloudProvider;
 
-    @Column(name = "resource_group")
-    private String resource_group;
+    @Enumerated(EnumType.STRING)
+    private ResourceType resourceType;
 
-    @Column(name = "ito_provider")
-    private String ito_provider;
+    // Example: GB of RAM or Storage
+    private Double resourceSizeGb;
 
-    @Column(name = "status")
-    private ProjectStatus status= ProjectStatus.New;
+    private Double monthlyBudget;
 
-    @Column(name = "cloud_provider")
-    private String cloud_provider;
+    private Double budgetThresholdPercentage = 80.0;
 
-    @Column(name = "annual_budget")
-    private Double annual_budget;
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus status = ProjectStatus.NEW;
 
-    @Column(name = "monthly_budget")
-    private Double monthly_budget;
+    private LocalDateTime createdAt;
 
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.status = ProjectStatus.ACTIVE;
+    }
 }
