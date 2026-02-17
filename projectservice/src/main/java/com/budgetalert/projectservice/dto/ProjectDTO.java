@@ -1,4 +1,4 @@
-package com.budgetalert.projectservice.model;
+package com.budgetalert.projectservice.dto;
 
 import lombok.Getter;
 import lombok.Setter;

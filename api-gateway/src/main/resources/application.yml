@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        service-name: ${spring.application.name}
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+        enabled: true
+
+    gateway:
+      routes:
+        # Catalog Service routes
+        - id: catalog-service
+          uri: lb://catalog-service
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - StripPrefix=0
+
+        # Inventory Service routes
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/v1/inventory/**
+          filters:
+            - StripPrefix=0
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+logging:
+  level:
+    com.corep.gateway: INFO
+    org.springframework.cloud.gateway: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %clr([%5level]) - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+

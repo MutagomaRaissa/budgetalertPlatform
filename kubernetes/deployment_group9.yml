@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: group-9
+type: Opaque
+data:
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASSWORD: cGFzc3dvcmQ=
+  POSTGRES_DB: YnVkZ2V0YWxlcnRfcHJvamVjdF9kYg==
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: project-service-config
+  namespace: group-9
+data:
+  SPRING_APPLICATION_NAME: projectservice
+  SERVER_PORT: "8081"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-postgres-headless
+  namespace: group-9
+spec:
+  clusterIP: None
+  selector:
+    app: project-postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: project-postgres
+  namespace: group-9
+spec:
+  serviceName: project-postgres-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-postgres
+  template:
+    metadata:
+      labels:
+        app: project-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-service
+  namespace: group-9
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-service
+  template:
+    metadata:
+      labels:
+        app: project-service
+    spec:
+      containers:
+        - name: project-service
+          image: rmutagoma/projectservice:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://project-postgres-headless:5432/budgetalert_project_db
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-service-svc
+  namespace: group-9
+spec:
+  selector:
+    app: project-service
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: ClusterIP
