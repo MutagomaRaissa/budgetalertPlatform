@@ -1,5 +1,5 @@
 # Apply in the existing namespace:
-# kubectl apply -n group-9 -f deployment_group9_fixed.yml
+# kubectl apply -n group-9 -f deployment_group9.yml
 
 # --------------------
 # Project DB
