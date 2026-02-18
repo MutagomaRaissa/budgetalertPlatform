@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coverage-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coverage-service
+  template:
+    metadata:
+      labels:
+        app: coverage-service
+    spec:
+      containers:
+        - name: coverage-service
+          image: rmutagoma/coverage-service:latest
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://coverage-db-0.coverage-db:5432/coveragedb"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials
+                  key: password
+          ports:
+            - containerPort: 8082
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: coverage-service
+spec:
+  selector:
+    app: coverage-service
+  ports:
+    - port: 8082
+      targetPort: 8082
